@@ -1,0 +1,71 @@
+<!doctype html public "-//W3C//DTD HTML 4.0//EN">
+<html>
+<head>
+<meta http-equiv='Content-Type' content='text/html; charset=utf-8' />
+<style type="text/css">
+#box {
+    width: 450px;
+    border-color: black;
+    border-style: solid;
+    padding: 10px;
+    margin: 20px;
+}
+
+#box2 {
+    border-color: black;
+    border-style: solid;
+    padding: 10px;
+    margin: 20px;
+}
+
+.left {
+    background-color: #F8F8F8;
+    float: left;
+    width: auto;
+}
+
+.right {
+    background-color: #F8F8F8;
+    overflow: hidden;
+}
+
+#antex {
+    font-size: 11px;
+    border-style: none;
+    padding: 1px;
+    margin: 1px;
+}
+</style>
+
+<script>
+function scroll_to_end() {
+    var frame = window.frames.myiframe;
+    frame.scrollTo(0, 1);
+}
+function reloadIframe() {
+    var iframe = document.getElementById('myiframe');
+    iframe.src = "/cgi-bin/node_activity.pl";
+    scroll_to_end();
+    setTimeout("reloadIframe()", 15000);
+}
+window.onload = reloadIframe;
+</script>
+
+</head>
+<body>
+<h1>UCD HiveMind C&C</h1>
+<h2>Experiment Status</h2>
+
+
+<div id="foo" />
+
+<iframe name="myiframe" id="myiframe" title="node activity" onload='scroll_to_end()' width='100%' height='850' align=left>...</iframe> 
+
+</div>
+
+<button type='button' onclick='/cgi-bin/reset_stats.pl'>Reset</button>
+<button type='button' onclick='reloadIframe()'>Update</button>
+
+</body>
+</html>
+
