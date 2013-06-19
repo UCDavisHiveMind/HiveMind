@@ -9,7 +9,7 @@
 #- Revised: v0.3 - 28 Sep 2012
 #-
 """
-Copyright (c) 2010,2011,2012 Regents of the University of the California
+Copyright (c) 2010,2011,2012,2013,2013 Regents of the University of the California
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of this
 software and/or hardware specification (the "Work"), to deal in the Work including
