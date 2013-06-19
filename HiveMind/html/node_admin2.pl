@@ -213,7 +213,7 @@ sub empty
         elsif($incoming{'Submit'} eq 'Assign Neighbors') {
             if (1) {
                 print("<H3>Assigning neighbors on listed nodes</H3>");
-                $command = "python /users/".$username."/sergeant.py 2> /tmp/errors";
+                $command = "python /users/".$username."/queen.py 2> /tmp/errors";
                 #print "<br/>[$command]</br>";
                 $results = `$command`;
 		sleep(1);

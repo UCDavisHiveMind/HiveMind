@@ -3,7 +3,7 @@ HiveMind testing notes: (3/10/12)
 
 
 Log in to Deter
-Log in to Sergeant node of experiment
+Log in to Queen node of experiment
 change to bash shell
 
 Set environment variable for the current experiment
@@ -34,13 +34,13 @@ check to see how many nodes actually started
 >> repeat changing n until you get the desired number of nodes alive. 
 >> (assume 412 needed to get 400 live nodes. i.e. 12 are not responding, so just add 12 extra from the pool)
 >> this can be ignored if you know the nodes you want are included. In fact, all this does is find live nodes
->> on which to start node_managers, and create a list of live nodes to be used by the Sergeant to start up
+>> on which to start node_managers, and create a list of live nodes to be used by the Queen to start up
 >> the ant monitoring system. If you have the names already, and you have the node managers already started,
 >> they can just be put in the list manually, or, given the list as input the the node_admin.py script, have
 >> the script start those nodes. (to be implemented)
 
-Run the sergeant to assign neighbors to nodes, and log the assignments to syslog
-./sergeant.py
+Run the Queen to assign neighbors to nodes, and log the assignments to syslog
+./Queen.py
 
 The nodes are now initialized. You can check this and see neighbor (and arbitrary enclave) assignments using:
 ./node_admin.py -n412 or ./node_admin.py -f hm_nodes_list
@@ -68,7 +68,7 @@ no actual mobile code. All sensor/cleanup functions are stored in the node_manag
 The prefered way to run a test is with a script that creates targets and sets delays. The "set_targets.py" program can
 do this and provides a large number of options to the user.
 
-After the test or tests have been completed, the activity that occurred is in /var/log/hivemind.log on the Sergeant node.
+After the test or tests have been completed, the activity that occurred is in /var/log/hivemind.log on the Queen node.
 This information will be used to create traces that can be sent to the viewer for visualization and study.
 
 Stop all node managers (optional, this will prevent additional data being written to the log file)
