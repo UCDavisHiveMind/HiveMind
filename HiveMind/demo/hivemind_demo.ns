@@ -1,0 +1,23 @@
+set ns [new Simulator]
+source tb_compat.tcl
+
+set opt(NODE_COUNT) 3
+
+set lanstr ""
+
+set hivemind [$ns node]
+tb-set-node-os $hivemind Ubuntu1004-STD
+append lanstr "hivemind "
+
+for { set i 1 } {$i <= $opt(NODE_COUNT)} {incr i} {
+    set node($i) [$ns node]
+    tb-set-node-os $node($i) Ubuntu1004-STD
+    append lanstr "$node($i) "
+
+}
+
+set lan1 [$ns make-lan $lanstr 100Mb 0ms ]
+
+$ns rtproto Static
+$ns run
+

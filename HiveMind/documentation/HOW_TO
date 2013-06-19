@@ -1,0 +1,127 @@
+HiveMind testing notes: (3/10/12)
+
+
+
+Log in to Deter
+Log in to Sergeant node of experiment
+change to bash shell
+
+Set environment variable for the current experiment
+export EXPERIMENT=hm-qemu-425x17
+
+Make sure no old node managers are currently running.
+./node_admin.py -n412 -q
+
+>> repeat this until it returns "number alive: 0"
+
+Now, cleanup any old stuff
+remove old log files (frequently end up owned by 'root' which causes problems trying to use them)
+cd
+rm -f log.*
+rm -f logs/new/*
+sudo rm /var/log/hivemind.log
+
+Modify and restart syslog to support user defined syslog log, and sync ntp times
+./start_hivemind.sh
+
+Now start the nodes in the experiment
+./node_admin.py -n425 -s
+<wait a minute for processes to start>
+
+check to see how many nodes actually started
+./node_admin.py -n425 --map
+
+>> repeat changing n until you get the desired number of nodes alive. 
+>> (assume 412 needed to get 400 live nodes. i.e. 12 are not responding, so just add 12 extra from the pool)
+>> this can be ignored if you know the nodes you want are included. In fact, all this does is find live nodes
+>> on which to start node_managers, and create a list of live nodes to be used by the Sergeant to start up
+>> the ant monitoring system. If you have the names already, and you have the node managers already started,
+>> they can just be put in the list manually, or, given the list as input the the node_admin.py script, have
+>> the script start those nodes. (to be implemented)
+
+Run the sergeant to assign neighbors to nodes, and log the assignments to syslog
+./sergeant.py
+
+The nodes are now initialized. You can check this and see neighbor (and arbitrary enclave) assignments using:
+./node_admin.py -n412 or ./node_admin.py -f hm_nodes_list
+ 
+
+
+Note, at this point no ants are present. You can manually create them (see below) or have the nodes automatically
+create them based on observed ant density (paramteres for this and other features are in the hivemind.cfg file)
+./node_admin.py -n412 --run
+
+At this point, you will need to set targets (e.g. things for the system to detect). For the demo code, these are
+implemented as specific files in specific directories tied to predefined attacks. These could be actual attacks 
+or evidence of them. You will need to place "Sensor Functions" for them in the node_mgr.py file (to be moved into 
+a separate include file). E.g a function to check for a particular open port, volume of network traffic,
+file checksums, character sequences in files, running/not-running processes, etc.
+
+
+Once you set a target, the sensors(ants) will be able to find it. Once found, if you have set a function to 
+remove the problem, future sensors will (obviously) not find it. Otherwise it will continue to be reported. Alternatively,
+the function can set an "ignore timer" so that for the next period of time the attack will be ignored, presumably
+limiting sensor response to it and giving someone time to mitigate the problem. Note: just as the detection sensor function
+could have been included as mobile code in the sensor, so could the mitigation code, but for the demo there is
+no actual mobile code. All sensor/cleanup functions are stored in the node_managers.
+
+The prefered way to run a test is with a script that creates targets and sets delays. The "set_targets.py" program can
+do this and provides a large number of options to the user.
+
+After the test or tests have been completed, the activity that occurred is in /var/log/hivemind.log on the Sergeant node.
+This information will be used to create traces that can be sent to the viewer for visualization and study.
+
+Stop all node managers (optional, this will prevent additional data being written to the log file)
+./node_admin.py -n425 -q
+>>repeat as needed until it returns no active nodes
+
+save the log file to a working directory
+sudo cp /var/log/hivemind.log ~/exp_logs/hivemind.exp-1.log
+
+strip out all the unneeded lines relative to a trace for visualization
+./clean_log.pl < exp_logs/hivemind.exp-1.log > exp_logs/hivemind.log.exp-1.clean
+./make_traces.pl < exp_logs/hivemind.log.exp-1.clean
+
+This last command places the trace file in a "traces" directory as "trace_xxx". You will need to rename / copy this file
+for archiving. The make_trace program also creates (optionally) traces of each ant individually. These will go into a 
+"ant traces" directory.
+
+To see the ant activity run the viewer "hivemind_viewer.py". Typically the trace file (or the clean file) is copied to an
+external host with graphics capability, and the visualizer is run there. This is shown with example parmeters. Use -h 
+to see all options and more info.
+
+./hivemind_viewer.py -d 100 -E -q -s traces/trace_xxx
+
+Note: trace files can be concatenated to make a longer running trace. Currently only the initial node map is used, so they
+all traces need to be on the same node architecture. If the list of nodes is explict, all is fine, If, for example on Deter, 
+where different instances of a Benito/QEMU experiment will result in different nodes being available, you should stick to
+the same instance of the experiment.
+
+
+------------------------------
+To get data off Experiment
+
+(1) To pull hivemind.log (syslog) entries to user NFS share, on users.isi.deterlab.net in your users (home) directory:
+
+sudo tail -f /var/log/hivemind.log >> foofile
+
+
+(2) To pull "foofile" to local host, 
+
+ssh hivemind@users.isi.deterlab.net tail -f foofile
+
+(3) Have local webserver process these
+
+
+
+To get results of node_admin calls off Experiment:
+
+<execute command>
+echo "[[starting tags]] >> foofile
+./node_admin.py -n16 >> foofile
+echo "[[ending tags]]" >> foofile
+
+
+
+
+
